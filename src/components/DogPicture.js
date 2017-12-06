@@ -8,7 +8,7 @@ export default class DogPicture extends Component {
 
     this.state = {
       imageUrl: '',
-      breed: ''
+      breed: props.breed
     }
   }
 
@@ -17,7 +17,6 @@ export default class DogPicture extends Component {
     .then(response => response.json())
     .then(data => this.setState({ imageUrl: data.message }))
     this.props.updateBreed(this.state.breed)
-    this.props.updateScore()
   }
 
   handleChange = event => {
@@ -27,7 +26,7 @@ export default class DogPicture extends Component {
   render() {
     return (
       <div>
-        <TextField fullWidth id="breed" label="What breed do you think you are?" onChange={this.handleChange} margin="normal" />
+        <TextField fullWidth value={this.state.breed} id="breed" label="What breed do you think you are?" onChange={this.handleChange} margin="normal" />
         <Button onClick={this.getImageUrl} raised color="primary">
           Show This Breed
         </Button>

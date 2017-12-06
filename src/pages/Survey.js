@@ -16,7 +16,7 @@ export default class Survey extends Component {
     this.state = {
       name: '',
       spirit: '',
-      score: 7,
+      score: 0,
       breed: '',
       activeStep: 0,
       breakfast: false,
@@ -27,32 +27,60 @@ export default class Survey extends Component {
     }
   }
 
-  updateSpirit = (event, value) => this.setState({ spirit: value, score: this.state.score - 1 })
+  updateSpirit = (event, value) => {
+    this.setState({ spirit: value })
+    this.updateScore()
+  }
 
-  updateVisited = (event, value) => this.setState({ visited: value })
+  updateVisited = (event, value) => {
+    this.setState({ visited: value })
+    this.updateScore()
+  }
 
-  updateBreakfastChoice = (event, value) => this.setState({ breakfastChoice: value })
+  updateBreakfastChoice = (event, value) => {
+    this.setState({ breakfastChoice: value })
+  }
 
-  updateIsTurkey = (event, value) => this.setState({ isTurkey: value })
+  updateIsTurkey = (event, value) => {
+    this.setState({ isTurkey: value })
+    this.updateScore()
+  }
 
-  updateBreed = breed => this.setState({ breed })
+  updateBreed = breed => {
+    this.setState({ breed })
+    this.updateScore()
+  }
 
   updateBreakfast = (event, value) => {
     if (value === 'yes') {
       this.setState({ breakfast: true })
     }
     this.setState({ breakfastAnswer: value })
+    this.updateScore()
   }
 
-  updateName = name => this.setState({ name })
+  updateName = (event) => {
+    this.setState({ name: event.target.value })
+    this.updateScore()
+  }
 
-  updateScore = () => this.setState({ score: this.state.score - 1 })
+  updateScore = () => {
+    let score = 0
+    if (this.state.name.length > 0) { score++ }
+    if (this.state.spirit.length > 0) { score++ }
+    if (this.state.breed.length > 0) { score++ }
+    if (this.state.breakfastAnswer.length > 0) { score++ }
+    if (this.state.breakfastChoice.length > 0) { score++ }
+    if (this.state.isTurkey.length > 0) { score++ }
+    if (this.state.visited.length > 0) { score++ }
+    this.setState({ score })
+  }
 
   handleNext = () => this.setState({ activeStep: this.state.activeStep + 1 })
 
   handleBack = () => this.setState({ activeStep: this.state.activeStep - 1 })
 
-  handleReset = () => this.setState({ activeStep: 0 })
+  handleReset = () => this.setState({ activeStep: 0, score: 0 })
 
   handleChoice = () => {
     if (this.state.breakfastChoice === 'bacon') {
@@ -86,7 +114,7 @@ export default class Survey extends Component {
       case 0:
         return (
           <FormControl component="fieldset">
-            <TextField fullWidth id="name" label="What is your name?" onChange={this.updateName} margin="normal" />
+            <TextField fullWidth id="name" value={this.state.name} label="What is your name?" onChange={this.updateName} margin="normal" />
             <div>
               <FormLabel component="legend">Are you a dog or a cat?</FormLabel>
               <RadioGroup name="spirit" value={this.state.spirit} onChange={this.updateSpirit}>
@@ -95,7 +123,7 @@ export default class Survey extends Component {
               </RadioGroup>
             </div>
             {this.state.spirit === 'dog' ? (
-              <DogPicture updateBreed={this.updateBreed} updateScore={this.updateScore} />
+              <DogPicture updateBreed={this.updateBreed} breed={this.state.breed} />
             ) : null}
           </FormControl>
         )
@@ -132,8 +160,8 @@ export default class Survey extends Component {
       case 2:
         return (
           <div>
-            <Typography>Hi, {this.state.name}!</Typography>
-            <Typography>Your spirit animal is a {this.state.spirit}.</Typography>
+            {this.state.name.length > 0 ? <Typography>Hi, {this.state.name}!</Typography> : null }
+            {this.state.spirit.length > 0 ? <Typography>Your spirit animal is a {this.state.spirit}.</Typography> : null }
             {this.state.breed.length > 0 ? <Typography>Your dog breed is {this.state.breed}.</Typography> : null}
             {this.state.breakfast ? <Typography>You would like eating breakfast for every meal.</Typography> : null}
             {this.state.visited === 'yes' ? <Typography>You have visited JJ's.</Typography> : <Typography>You should really go to JJ's.</Typography>}
@@ -152,6 +180,7 @@ export default class Survey extends Component {
         <Grid container spacing={24}>
           <Grid item xs={12}>
             <Paper style={styles.paper}>
+            <Typography type="title" gutterBottom>You have answered {this.state.score}</Typography>
               {this.state.activeStep === steps.length ? (
                 <Button onClick={this.handleReset}>Reset</Button>
               ) : (
