@@ -32,7 +32,7 @@ export default class DogPicture extends Component {
           Show This Breed
         </Button>
         <div style={styles.wrapper}>
-          {this.state.breed.length > 0 ? <img src={this.state.imageUrl} /> : null}
+          {this.state.breed.length > 0 ? <img alt='' src={this.state.imageUrl} /> : null}
         </div>
       </div>
     )
